@@ -12,16 +12,40 @@ function App() {
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const [evaluation, setEvaluation] = useState(0);
 
+  const fetchEvaluation = async (fen) => {
+    try {
+      const depth = 15;
+      const url = `https://stockfish.online/api/stockfish.php?fen=${encodeURIComponent(fen)}&depth=${depth}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      let cp = 0;
+      if (typeof data === 'object') {
+        if (data.cp !== undefined) cp = data.cp;
+        else if (data.score !== undefined) cp = data.score;
+        else if (data.eval !== undefined) cp = data.eval;
+        else if (data.analysis && data.analysis[0] && data.analysis[0].score !== undefined) {
+          cp = data.analysis[0].score;
+        }
+      }
+      const evalScore = parseFloat(cp) / 100;
+      if (!isNaN(evalScore)) setEvaluation(evalScore);
+    } catch (error) {
+      console.error('Error fetching evaluation:', error);
+    }
+  };
+
   const handlePGNLoad = (loadedPgn) => {
     setPgn(loadedPgn);
     setCurrentMoveIndex(0);
     setMoves([]);
     setEvaluation(0);
-    
+    const { Chess } = require('chess.js');
+    fetchEvaluation(new Chess().fen());
+
     // Parse moves from the PGN
     if (loadedPgn) {
       try {
-        const { Chess } = require('chess.js');
         const game = new Chess();
         game.loadPgn(loadedPgn);
         setMoves(game.history({ verbose: true }));
@@ -34,15 +58,26 @@ function App() {
   const handleMovePlayed = (updatedMoves) => {
     setMoves(updatedMoves);
     setCurrentMoveIndex(updatedMoves.length);
+    try {
+      const { Chess } = require('chess.js');
+      const game = new Chess();
+      updatedMoves.forEach((m) => game.move(m));
+      fetchEvaluation(game.fen());
+    } catch (error) {
+      console.error('Error processing move:', error);
+    }
   };
 
   const handleMoveClick = (index) => {
     setCurrentMoveIndex(index);
-    
-    // Generate a random evaluation for demo purposes
-    // In a real app, this would come from an engine or stored analysis
-    const randomEval = (Math.random() * 2 - 1).toFixed(1);
-    setEvaluation(parseFloat(randomEval));
+    try {
+      const { Chess } = require('chess.js');
+      const game = new Chess();
+      moves.slice(0, index).forEach((m) => game.move(m));
+      fetchEvaluation(game.fen());
+    } catch (error) {
+      console.error('Error fetching evaluation:', error);
+    }
   };
 
   return (

@@ -12,6 +12,32 @@ function App() {
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const [evaluation, setEvaluation] = useState(0);
 
+  const getFenForMoves = (movesArray) => {
+    const { Chess } = require('chess.js');
+    const tempGame = new Chess();
+    movesArray.forEach((m) => tempGame.move(m));
+    return tempGame.fen();
+  };
+
+  const fetchEvaluation = async (fen) => {
+    try {
+      const response = await fetch(
+        `https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}&multiPv=1`
+      );
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data = await response.json();
+      const pv = data.pvs && data.pvs[0];
+      if (!pv) return 0;
+      if (pv.mate !== undefined && pv.mate !== null) {
+        return pv.mate > 0 ? 100 : -100;
+      }
+      return pv.cp / 100;
+    } catch (e) {
+      console.error('Error fetching evaluation:', e);
+      return 0;
+    }
+  };
+
   const handlePGNLoad = (loadedPgn) => {
     setPgn(loadedPgn);
     setCurrentMoveIndex(0);
@@ -24,7 +50,10 @@ function App() {
         const { Chess } = require('chess.js');
         const game = new Chess();
         game.loadPgn(loadedPgn);
-        setMoves(game.history({ verbose: true }));
+        const history = game.history({ verbose: true });
+        setMoves(history);
+        const fen = getFenForMoves([]);
+        fetchEvaluation(fen).then(setEvaluation);
       } catch (error) {
         console.error("Error loading PGN:", error);
       }
@@ -34,15 +63,14 @@ function App() {
   const handleMovePlayed = (updatedMoves) => {
     setMoves(updatedMoves);
     setCurrentMoveIndex(updatedMoves.length);
+    const fen = getFenForMoves(updatedMoves);
+    fetchEvaluation(fen).then(setEvaluation);
   };
 
   const handleMoveClick = (index) => {
     setCurrentMoveIndex(index);
-    
-    // Generate a random evaluation for demo purposes
-    // In a real app, this would come from an engine or stored analysis
-    const randomEval = (Math.random() * 2 - 1).toFixed(1);
-    setEvaluation(parseFloat(randomEval));
+    const fen = getFenForMoves(moves.slice(0, index));
+    fetchEvaluation(fen).then(setEvaluation);
   };
 
   return (

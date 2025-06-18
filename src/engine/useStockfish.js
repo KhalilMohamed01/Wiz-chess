@@ -6,11 +6,17 @@ export default function useStockfish() {
   const engineRef = useRef(null);
 
   useEffect(() => {
-    const worker = new Worker(STOCKFISH_URL);
+    const blobUrl = URL.createObjectURL(
+      new Blob([
+        `importScripts('${STOCKFISH_URL}');`,
+      ], { type: 'application/javascript' }),
+    );
+    const worker = new Worker(blobUrl);
     worker.postMessage('uci');
     engineRef.current = worker;
     return () => {
       worker.terminate();
+      URL.revokeObjectURL(blobUrl);
     };
   }, []);
 

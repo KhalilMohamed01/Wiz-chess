@@ -1,12 +1,29 @@
-# Getting Started with Create React App
+# WizChess - AI Chess Game Mentor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+WizChess is an AI-powered chess game analysis tool that helps players improve their chess skills by providing detailed analysis and guidance.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Interactive chess board with dark theme
+- PGN file upload and parsing
+- Move history display with interactive navigation
+- Game information display
+- Evaluation bar
+- Clean, modern interface based on the ChessSage palette
 
-### `npm start`
+## Getting Started
+
+### Installation
+
+1. Clone this repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the development server:
+   ```
+   npm start
+   ```
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.

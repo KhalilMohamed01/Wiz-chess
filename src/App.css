@@ -1,38 +1,290 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.app-logo {
+  height: 60px;
+  width: auto;
+}
+
+.app-title {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.board-section {
+  flex: 1;
+  min-width: 650px;
+  position: relative;
+}
+
+.analysis-container {
+  flex: 1;
+  min-width: 350px;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  background-color: var(--surface-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.player-rating {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.evaluation-bar-container {
+  height: 750px;
+  width: 36px;
+  background-color: var(--surface-color);
+  border-radius: 8px;
+  overflow: hidden;
+  position: absolute;
+  left: -54px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.evaluation-bar {
+  background-color: var(--primary-color);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  transition: height 0.3s ease;
+}
+
+.evaluation-bar.animating {
+  transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.evaluation-value {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  background-color: var(--surface-color);
+  padding: 3px 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.moves-list {
+  max-height: 450px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--surface-color);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.moves-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.moves-list::-webkit-scrollbar-track {
+  background: var(--surface-color);
+}
+
+.moves-list::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 20px;
+}
+
+.move-row {
+  display: grid;
+  grid-template-columns: 30px 1fr 1fr;
+  gap: 10px;
+  padding: 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
+}
+
+.move-row:last-child {
+  border-bottom: none;
+}
+
+.move-number {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: center;
+}
+
+.move {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.move:hover {
+  background-color: rgba(152, 195, 121, 0.15);
+}
+
+.move.active {
+  background-color: rgba(152, 195, 121, 0.3);
+  font-weight: 600;
+  color: var(--primary-color);
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.brilliant {
+  color: var(--brilliant-color);
+}
+
+.good {
+  color: var(--primary-color);
+}
+
+.inaccuracy {
+  color: var(--highlight-color);
+}
+
+.mistake {
+  color: var(--error-color);
+}
+
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.upload-area {
+  border: 2px dashed var(--primary-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-area:hover {
+  background-color: rgba(152, 195, 121, 0.05);
+}
+
+.upload-text {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  background-color: #8ab36c;
+}
+
+button.secondary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+button.secondary:hover {
+  background-color: rgba(152, 195, 121, 0.1);
+}
+
+.chessboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.move-controls {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  background-color: var(--surface-color);
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.move-controls button.control-button {
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  padding: 0;
+  background-color: rgba(152, 195, 121, 0.12);
+  color: var(--primary-color);
+  transition: all 0.2s ease;
 }
 
-.App-link {
-  color: #61dafb;
+.move-controls button.control-button:hover {
+  background-color: rgba(152, 195, 121, 0.25);
+  transform: translateY(-2px);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.move-controls button.control-button:active {
+  transform: translateY(0);
 }

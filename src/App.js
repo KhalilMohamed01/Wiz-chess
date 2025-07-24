@@ -5,12 +5,14 @@ import EvaluationBar from './components/EvaluationBar';
 import MovesList from './components/MovesList';
 import PGNUploader from './components/PGNUploader';
 import GameInfo from './components/GameInfo';
+import useStockfish from './engine/useStockfish';
 
 function App() {
   const [pgn, setPgn] = useState('');
   const [moves, setMoves] = useState([]);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const [evaluation, setEvaluation] = useState(0);
+  const { analyze } = useStockfish();
 
   const handlePGNLoad = (loadedPgn) => {
     setPgn(loadedPgn);
@@ -34,15 +36,30 @@ function App() {
   const handleMovePlayed = (updatedMoves) => {
     setMoves(updatedMoves);
     setCurrentMoveIndex(updatedMoves.length);
+
+    const { Chess } = require('chess.js');
+    const game = new Chess();
+    updatedMoves.forEach((m) => game.move(m));
+    analyze(game.fen()).then((evalScore) => {
+      if (typeof evalScore === 'number') {
+        setEvaluation(evalScore);
+      }
+    });
   };
 
   const handleMoveClick = (index) => {
     setCurrentMoveIndex(index);
-    
-    // Generate a random evaluation for demo purposes
-    // In a real app, this would come from an engine or stored analysis
-    const randomEval = (Math.random() * 2 - 1).toFixed(1);
-    setEvaluation(parseFloat(randomEval));
+
+    const { Chess } = require('chess.js');
+    const game = new Chess();
+    for (let i = 0; i < index; i += 1) {
+      game.move(moves[i]);
+    }
+    analyze(game.fen()).then((evalScore) => {
+      if (typeof evalScore === 'number') {
+        setEvaluation(evalScore);
+      }
+    });
   };
 
   return (
